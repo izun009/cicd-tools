@@ -49,6 +49,7 @@ services:
   jenkins-prometheus:
     container_name: jenkins-prometheus
     image: prom/prometheus:latest
+    restart: always
     ports:
       - "9091:9090"
     volumes:
@@ -60,6 +61,7 @@ services:
   jenkins-grafana:
     container_name: jenkins-grafana
     image: grafana/grafana:latest
+    restart: always
     ports:
       - "3031:3030"
     environment:
