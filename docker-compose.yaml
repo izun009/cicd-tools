@@ -1,4 +1,4 @@
-version: '3'
+version: '3.9'
 services:
 
   # jenkins docker:dind
@@ -14,6 +14,7 @@ services:
     environment:
       - DOCKER_TLS_CERTDIR=/certs
     volumes:
+      - "${HOME}:/home"
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client
     ports:
@@ -23,15 +24,15 @@ services:
   # Jenkins blueocean
   jenkins-blueocean:
     container_name: jenkins-blueocean
-    image: jenkins/jenkins
     build: 
       context: .
       dockerfile: ./jenkins-image/Dockerfile
+    image: jenkins-blueocean/jenkins-blueocean
     restart: always
     networks:
       - jenkins
     environment:
-      - DOCKER_HOST=tcp://docker:2376 # docker refer to jenkins-docker network aliases
+      - DOCKER_HOST=tcp://docker:2376 
       - DOCKER_CERT_PATH=/certs/client
       - DOCKER_TLS_VERIFY=1
       - JAVA_OPTS=-Dhudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
@@ -41,7 +42,7 @@ services:
     volumes:
       - jenkins-data:/var/jenkins_home
       - jenkins-docker-certs:/certs/client:ro
-      - "$HOME:/home"
+      - "${HOME}:/home"
     depends_on:
       - jenkins-docker
 
@@ -69,9 +70,11 @@ services:
     networks:
       - jenkins
 
-networks:
-  jenkins:
-
 volumes:
   jenkins-docker-certs:
   jenkins-data:
+
+networks:
+  jenkins:
+    name: jenkins
+    external: true
